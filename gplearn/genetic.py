@@ -190,7 +190,8 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
                  low_memory=False,
                  n_jobs=1,
                  verbose=0,
-                 random_state=None):
+                 random_state=None,
+                 generation_end_callback=None):
 
         self.population_size = population_size
         self.hall_of_fame = hall_of_fame
@@ -218,6 +219,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
         self.n_jobs = n_jobs
         self.verbose = verbose
         self.random_state = random_state
+        self.generation_end_callback = generation_end_callback
 
     def _verbose_reporter(self, run_details=None):
         """A report of the progress of the evolution process.
@@ -546,6 +548,9 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
                 best_fitness = fitness[np.argmin(fitness)]
                 if best_fitness <= self.stopping_criteria:
                     break
+            
+            if self.generation_end_callback != None:
+                self.generation_end_callback(best_program)
 
         if isinstance(self, TransformerMixin):
             # Find the best individuals in the final generation
@@ -808,7 +813,8 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
                  low_memory=False,
                  n_jobs=1,
                  verbose=0,
-                 random_state=None):
+                 random_state=None,
+                 generation_end_callback=None):
         super(SymbolicRegressor, self).__init__(
             population_size=population_size,
             generations=generations,
@@ -831,7 +837,8 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
             low_memory=low_memory,
             n_jobs=n_jobs,
             verbose=verbose,
-            random_state=random_state)
+            random_state=random_state,
+            generation_end_callback=generation_end_callback)
 
     def __str__(self):
         """Overloads `print` output of the object to resemble a LISP tree."""
