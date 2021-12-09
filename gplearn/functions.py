@@ -44,6 +44,9 @@ class _Function(object):
 
     def __call__(self, *args):
         return self.function(*args)
+    
+    def __str__(self):
+        return self.name
 
 
 def make_function(function, name, arity, wrap=True):
